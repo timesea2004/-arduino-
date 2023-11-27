@@ -103,7 +103,7 @@ void IRremote(){
         goBackward();
         Serial.println("turn backward");
         break;
-      case 0xCC15BB:
+      case 0xCC16BB:
         turnLeft();
         Serial.println("turn left");
         break;
