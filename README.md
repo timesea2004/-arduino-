@@ -107,15 +107,14 @@ void IRremote(){
         turnLeft();
         Serial.println("turn left");
         break;
-      case 0xBB15CC:
+      case 0xBB16CC:
         turnRight();
         Serial.println("turn right");
         break;
     }
-    
   }
-
 }
+
 void goForward(){
   digitalWrite(Int1,LOW);//定义引脚状态
   digitalWrite(Int2,HIGH);
