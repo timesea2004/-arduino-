@@ -1,6 +1,9 @@
 # -arduino-
 电机：L298N ；开发板：arduino uno R3； 四个减速电机；超声波测距模块；红外遥控模块；显示屏：ssd1306
-
+上：FF18E7
+右：FF5AA5
+下：FF4AB5
+左：FF10EF
 ```cpp
 #include<Wire.h>//引入I2C的库
 #include<IRremote.h>
@@ -99,15 +102,15 @@ void IRremote(){
         goForward();
         Serial.println("turn forward");
         break;
-      case 0xFF11FF:
+      case 0xFF4AB5:
         goBackward();
         Serial.println("turn backward");
         break;
-      case 0xCC16BB:
+      case 0xFF10EF:
         turnLeft();
         Serial.println("turn left");
         break;
-      case 0xBB16CC:
+      case 0xFF5AA5:
         turnRight();
         Serial.println("turn right");
         break;

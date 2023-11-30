@@ -1,2 +1,107 @@
 增加舵机控制，超声波移动测距
-#include<wore.h>
+
+```cpp
+#include<IRremote.h>
+#define Motor_M1_Port 12
+#define Motor_M2_Port 13
+#define Motor_PWM_Port 5
+#define Motor_M3_Port 7
+#define Motor_M4_Port 8
+#define Motor_PWM2_Port 9
+#define RECV_PIN A0
+int pwm_motor = 0;
+int pwm_motor2 = 0;
+IRrecv myIRrecv(RECV_PIN);
+decode_results results;
+void Motor_pwm_up() {
+  // put your setup code here, to run once:
+  pwm_motor+=10;
+  pwm2_motor+=10;
+  if(pwm_motor>50){
+    pwm_motor=255;
+    analogWrite(Motor_PWM_Port,pwm_motor);
+  }
+  if(pwm_motor2>50){
+    pwm_motor2=255;
+    analogWrite(Motor_PWM2_Port,pwm2_motor);
+  }
+}
+void Motor_pwm_down() {
+  // put your setup code here, to run once:
+  pwm_motor-=10;
+  if(pwm_motor<50){
+    pwm_motor=50;
+  analogWrite(Motor_PWM_Port,pwm_motor);
+  }
+  if(pwm2_motor<50){
+    pwm2_motor=50;
+  analogWrite(Motor_PWM2_Port,pwm_motor);
+  }
+}
+void Motorsetspeed(int v1){
+  if(v1>0){
+    digitalWrite(Motor_M1_Port,LOW);
+    digitalWrite(Motor_M1_Port,HIGH);
+  }
+  else{
+    digitalWrite(Motor_M1_Port,HIGH);
+    digitalWrite(Motor_M1_Port,LOW);
+  }
+  pwm_motor=abs(v1);
+  analogWrite(Motor_M1_Port,abs(v1));
+}
+void IRdisplay(unsigned long value){
+  switch(value){
+    case 0xFF18E7:
+    Serial.println("2");
+    Motorsetspeed(0);
+    delay(200);
+    Motorsetspeed(160);
+    Serial.println("电机向前转");
+    break;
+    case 0xFF38C7:
+    Serial.println("5");
+    Motorsetspeed(0);
+    Serial.println("电机停止转");
+    break;
+    case 0xFF4AB5:
+    Serial.println("8");
+    Motorsetspeed(0);
+    delay(200);
+    Motorsetspeed(-160);
+    Serial.println("电机向后转");
+    break;
+    case 0xFF19E7:
+    Serial.println("+");
+    Motor_pwm_up();
+    Serial.println("电机加速");
+    break;
+    case 0xFF19E8:
+    Serial.println("-");
+    Motor_pwm_up();
+    Serial.println("电机减速");
+    break;
+    default:
+    Serial.println("请按下正确的按键");
+    break;
+  }
+}
+void setup(){
+  Serial.begin(9600);
+  myIRrecv.enableIRIn();
+  pinMode(Motor_M1_Port,OUTPUT);
+  pinMode(Motor_M2_Port,OUTPUT);
+  pinMode(Motor_PWM_Port,OUTPUT);
+  pinMode(Motor_M3_Port,OUTPUT);
+  pinMode(Motor_M4_Port,OUTPUT);
+  pinMode(Motor_PWM2_Port,OUTPUT);
+}
+void loop() {
+  // put your main code here, to run repeatedly:
+  if(myIRrecv.decode(&results)){
+    IRdisplay(results.value);
+    myIRrecv.resume();
+  }
+}
+
+```
