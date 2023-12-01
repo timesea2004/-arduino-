@@ -16,14 +16,14 @@ decode_results results;
 void Motor_pwm_up() {
   // put your setup code here, to run once:
   pwm_motor+=10;
-  pwm2_motor+=10;
+  pwm_motor2+=10;
   if(pwm_motor>50){
     pwm_motor=255;
     analogWrite(Motor_PWM_Port,pwm_motor);
   }
   if(pwm_motor2>50){
     pwm_motor2=255;
-    analogWrite(Motor_PWM2_Port,pwm2_motor);
+    analogWrite(Motor_PWM2_Port,pwm_motor2);
   }
 }
 void Motor_pwm_down() {
@@ -33,42 +33,60 @@ void Motor_pwm_down() {
     pwm_motor=50;
   analogWrite(Motor_PWM_Port,pwm_motor);
   }
-  if(pwm2_motor<50){
-    pwm2_motor=50;
-  analogWrite(Motor_PWM2_Port,pwm_motor);
+  if(pwm_motor2<50){
+    pwm_motor2=50;
+  analogWrite(Motor_PWM2_Port,pwm_motor2);
   }
 }
-void Motorsetspeed(int v1){
+void Motorsetspeed(int v1,int v2){
   if(v1>0){
     digitalWrite(Motor_M1_Port,LOW);
-    digitalWrite(Motor_M1_Port,HIGH);
+    digitalWrite(Motor_M2_Port,HIGH);
+    digitalWrite(Motor_M3_Port,LOW);
+    digitalWrite(Motor_M4_Port,HIGH);
   }
   else{
     digitalWrite(Motor_M1_Port,HIGH);
+    digitalWrite(Motor_M2_Port,LOW);
+    digitalWrite(Motor_M3_Port,HIGH);
+    digitalWrite(Motor_M4_Port,LOW);
+  }
+  if(v2>0){
     digitalWrite(Motor_M1_Port,LOW);
+    digitalWrite(Motor_M2_Port,HIGH);
+    digitalWrite(Motor_M3_Port,LOW);
+    digitalWrite(Motor_M4_Port,HIGH);
+  }
+  else{
+    digitalWrite(Motor_M1_Port,HIGH);
+    digitalWrite(Motor_M2_Port,LOW);
+    digitalWrite(Motor_M3_Port,HIGH);
+    digitalWrite(Motor_M4_Port,LOW);
   }
   pwm_motor=abs(v1);
+  pwm_motor2=abs(v2);
   analogWrite(Motor_M1_Port,abs(v1));
+  analogWrite(Motor_M3_Port,abs(v2));
 }
 void IRdisplay(unsigned long value){
   switch(value){
     case 0xFF18E7:
     Serial.println("2");
-    Motorsetspeed(0);
+    Motorsetspeed(0,0);
     delay(200);
-    Motorsetspeed(160);
+    Motorsetspeed(160,160);
     Serial.println("电机向前转");
     break;
     case 0xFF38C7:
     Serial.println("5");
-    Motorsetspeed(0);
+    Motorsetspeed(0,0);
     Serial.println("电机停止转");
     break;
     case 0xFF4AB5:
     Serial.println("8");
-    Motorsetspeed(0);
+    Motorsetspeed(0,0);
     delay(200);
-    Motorsetspeed(-160);
+    Motorsetspeed(-160,-160);
     Serial.println("电机向后转");
     break;
     case 0xFF19E7:
