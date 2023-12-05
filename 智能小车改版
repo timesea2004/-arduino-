@@ -13,7 +13,7 @@ int pwm_motor = 0;
 int pwm_motor2 = 0;
 IRrecv myIRrecv(RECV_PIN);
 decode_results results;
-void Motor_pwm_up() {
+void Motor_pwm_up() {//加速函数
   // put your setup code here, to run once:
   pwm_motor+=10;
   pwm_motor2+=10;
@@ -26,7 +26,7 @@ void Motor_pwm_up() {
     analogWrite(Motor_PWM2_Port,pwm_motor2);
   }
 }
-void Motor_pwm_down() {
+void Motor_pwm_down() {//减速函数
   // put your setup code here, to run once:
   pwm_motor-=10;
   if(pwm_motor<50){
@@ -38,7 +38,7 @@ void Motor_pwm_down() {
   analogWrite(Motor_PWM2_Port,pwm_motor2);
   }
 }
-void Motorsetspeed(int v1,int v2){
+void Motorsetspeed(int v1,int v2){//转向函数
   if(v1>0){
     digitalWrite(Motor_M1_Port,LOW);
     digitalWrite(Motor_M2_Port,HIGH);
@@ -68,7 +68,7 @@ void Motorsetspeed(int v1,int v2){
   analogWrite(Motor_M1_Port,abs(v1));
   analogWrite(Motor_M3_Port,abs(v2));
 }
-void IRdisplay(unsigned long value){
+void IRdisplay(unsigned long value){//红外控制函数
   switch(value){
     case 0xFF18E7:
     Serial.println("2");
@@ -121,5 +121,3 @@ void loop() {
     myIRrecv.resume();
   }
 }
-
-```
