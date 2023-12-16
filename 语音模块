@@ -1,0 +1,67 @@
+#include "asr.h"
+extern "C"{ void * __dso_handle = 0 ;}
+#include "setup.h"
+#include "HardwareSerial.h"
+
+uint32_t snid;
+String Rec;
+void ASR_CODE();
+void hardware_init();
+
+//{ID:250,keyword:"命令词",ASR:"最大音量",ASRTO:"音量调整到最大"}
+//{ID:251,keyword:"命令词",ASR:"中等音量",ASRTO:"音量调整到中等"}
+//{ID:252,keyword:"命令词",ASR:"最小音量",ASRTO:"音量调整到最小"}
+/*描述该功能...
+*/
+void ASR_CODE(){
+  switch (snid) {
+   case 1:
+    Serial.print("Run");
+    set_state_enter_wakeup(20000);
+    break;
+   case 2:
+    Serial.print("Left");
+    set_state_enter_wakeup(20000);
+    break;
+   case 3:
+    Serial.print("Right");
+    set_state_enter_wakeup(20000);
+    break;
+   case 4:
+    Serial.print("Back");
+    set_state_enter_wakeup(20000);
+    break;
+   case 5:
+    Serial.print("Stop");
+    set_state_enter_wakeup(20000);
+    break;
+  }
+  delay(10);
+
+}
+
+void hardware_init(){
+  Serial.print("sucessful");
+  Rec = "";
+  vTaskDelete(NULL);
+}
+
+void setup()
+{
+  //{speak:欢欢-职业女声,vol:20,speed:8,platform:haohaodada}
+  //{playid:10001,voice:行车不规范，亲人两行泪。我是你的助手，榕智精灵}
+  //{ID:0,keyword:"唤醒词",ASR:"榕智精灵",ASRTO:"您请吩咐"}
+  //{ID:1,keyword:"命令词",ASR:"前进",ASRTO:"车辆前进，上街交警提醒您，请注意行车规范"}
+  //{ID:2,keyword:"命令词",ASR:"左转",ASRTO:"车辆左转"}
+  //{ID:3,keyword:"命令词",ASR:"右转",ASRTO:"车辆右转"}
+  //{ID:4,keyword:"命令词",ASR:"后退",ASRTO:"车辆后退，请注意倒车安全"}
+  //{ID:5,keyword:"命令词",ASR:"停止",ASRTO:"车辆停止，请注意后方车辆"}
+  set_state_enter_wakeup(60000);
+  dpmu_set_io_open_drain(pinToFun[13],ENABLE );
+  dpmu_set_io_pull(pinToFun[13],DPMU_IO_PULL_UP);
+  dpmu_set_io_pull(pinToFun[14],DPMU_IO_PULL_DISABLE);
+  setPinFun(13,SECOND_FUNCTION);
+  setPinFun(14,SECOND_FUNCTION);
+  Serial.begin(9600);
+  xTaskCreate(hardware_init,"hardware_init",256,NULL,100,NULL);
+}
