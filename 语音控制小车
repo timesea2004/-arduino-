@@ -1,0 +1,116 @@
+
+```cpp
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(11, 12);             //软串口， RX：pin 11, TX：pin 12
+String value;
+
+#define STOP      0         //停止
+#define RUN       1         //前进
+#define BACK      2         //后退
+#define LEFT      3         //左转
+#define RIGHT     4         //右转
+
+/*从车尾到车头方向看过去进行左右排序*/
+int ENA = 5;                        //L298N使能端右,右电机PWM调速
+int motor_right_Int1 = 6;           //右电机1
+int motor_right_Int2 = 7;           //右电机2
+int motor_left_Int3 = 8;            //左电机1
+int motor_left_Int4 = 9;            //左电机2
+int ENB = 10;                       //L298N使能端左，左电机PWM调速
+
+void Work(int c,int value_L,int value_R)     //定义电机运行状态，两个电机的PWM值，可进行差速调节：value_L --> 左电机速度，value_R --> 右电机速度
+{
+  analogWrite(ENA, value_R);                //设置右电机PWM输出，设置速度
+  analogWrite(ENB, value_L);                //设置左电机PWM输出，设置速度
+  switch(c)
+  {
+     case RUN:
+      Serial.println("RUN");             //前进输出状态
+      digitalWrite(motor_left_Int3,  LOW);            
+      digitalWrite(motor_left_Int4,  HIGH);           //左电机正转
+      digitalWrite(motor_right_Int1,  LOW);
+      digitalWrite(motor_right_Int2, HIGH);           //右电机正转
+      break;
+     case BACK:
+      Serial.println("BACK");            //后退输出状态
+      digitalWrite(motor_left_Int3,  HIGH);
+      digitalWrite(motor_left_Int4,  LOW);           //左电机反转
+      digitalWrite(motor_right_Int1,  HIGH);          
+      digitalWrite(motor_right_Int2, LOW);           //右电机反转
+      break;
+     case RIGHT:                       //右转弯输出状态，往右偏，右电机反转，左电机正转
+      Serial.println("RIGHT");               
+      digitalWrite(motor_left_Int3,  LOW);
+      digitalWrite(motor_left_Int4,  HIGH);         //左电机正转
+      digitalWrite(motor_right_Int1,  HIGH);
+      digitalWrite(motor_right_Int2, LOW);          //右电机反转
+      break;
+     case LEFT:
+      Serial.println("LEFT");           //左转输出状态，往左偏，左电机反转，右电机正转
+      digitalWrite(motor_left_Int3,  HIGH);
+      digitalWrite(motor_left_Int4,  LOW);          //左电机反转
+      digitalWrite(motor_right_Int1,  LOW );
+      digitalWrite(motor_right_Int2, HIGH);         //右电机正转
+      break;
+     case STOP:
+      Serial.println("STOP");           //停止输出状态
+      digitalWrite(motor_left_Int3, LOW);
+      digitalWrite(motor_left_Int4, LOW);          //左电机停止
+      digitalWrite(motor_right_Int1, LOW);
+      digitalWrite(motor_right_Int2, LOW);         //右电机停止
+      break;
+  }
+}
+
+ void voice()                           //识别语音，根据语音模块串口传输的字符串进行识别，判断执行动作；
+{
+  Serial.println("-----------");
+  delay(500);
+  if (mySerial.available()) {
+    value = mySerial.readString();
+      Serial.println(value);
+    if (value == "Run")                //语音指令"前进"，识别到前进指令字符串"Run"后，执行前进代码
+    {
+      Work(RUN,130,130);
+      Serial.println("Run");
+     }
+    else if (value == "Left")         //语音指令"左转"，识别到前进指令字符串"Left"后，执行前进代码        
+    {
+      Work(LEFT,130,130);
+      Serial.println("Left");
+     }
+    else if (value == "Right")        //语音指令"右转"，识别到前进指令字符串"Right"后，执行前进代码
+    {
+      Work(RIGHT,130,130);
+      Serial.println("Right");
+    }
+    else if (value == "Back")         //语音指令"后退"，识别到前进指令字符串"Bcak"后，执行前进代码
+    {
+      Work(BACK,130,130);
+      Serial.println("Back");
+    }
+    else if (value == "Stop")         //语音指令"停止"，识别到前进指令字符串"Stop"后，执行前进代码
+    {
+      Work(STOP,0,0);
+      Serial.println("stop");
+    }
+  }
+}
+
+
+void setup() {
+  Serial.begin(9600);                      //硬件串口波特率：9600
+  mySerial.begin(9600);                    //语音软串口波特率：9600
+  pinMode(motor_right_Int1, OUTPUT);       //电机控制引脚初始化
+  pinMode(motor_right_Int2, OUTPUT);
+  pinMode(motor_left_Int3, OUTPUT);
+  pinMode(motor_left_Int4, OUTPUT);
+  pinMode(ENA, OUTPUT);                    //电机PWM引脚初始化
+  pinMode(ENB, OUTPUT);
+}
+
+void loop() {
+  voice();
+}
+
+```
